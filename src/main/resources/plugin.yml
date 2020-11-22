@@ -1,0 +1,5 @@
+name: ShiftDistance
+version: ${project.version}
+main: net.teamfruit.shiftdistance.ShiftDistance
+api-version: 1.15
+authors: [Kamesuta]
