@@ -3,6 +3,7 @@ package net.teamfruit.shiftdistance;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.apache.commons.lang.math.NumberUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
@@ -37,7 +38,7 @@ public final class ShiftDistance extends JavaPlugin implements Listener {
             return false;
 
         radius = NumberUtils.toDouble(args[0]);
-        sender.sendMessage(new ComponentBuilder()
+        Bukkit.broadcast(new ComponentBuilder()
                 .append("[かめすたプラグイン] ").color(ChatColor.LIGHT_PURPLE)
                 .append("おならの強さ(半径)を ").color(ChatColor.GREEN)
                 .append(String.valueOf(radius)).color(ChatColor.WHITE)
