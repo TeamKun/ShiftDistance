@@ -4,6 +4,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -60,20 +61,24 @@ public final class ShiftDistance extends JavaPlugin implements Listener {
         Player player = event.getPlayer();
         if (event.isSneaking()) {
             if (radius > 0 && player.hasPermission("shiftdistance.use"))
-                blowingTasks.computeIfAbsent(player, k -> new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        if (!(radius > 0)) {
-                            cancel();
-                            return;
+                blowingTasks.computeIfAbsent(player, p -> {
+                    p.getWorld().playSound(p.getLocation(), Sound.ENTITY_BEE_HURT,
+                            1, (float) (1 - .2 + Math.random() * .2 * 2));
+                    return new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            if (!(radius > 0)) {
+                                cancel();
+                                return;
+                            }
+                            Location loc = player.getLocation();
+                            BoundingBox box = BoundingBox.of(loc.toVector(), radius, radius, radius);
+                            repelEntitiesInAABBFromPoint(player.getWorld(), box, player.getLocation().toVector(), player);
+                            if (player.isDead() || !player.isOnline() || !player.isSneaking())
+                                cancel();
                         }
-                        Location loc = player.getLocation();
-                        BoundingBox box = BoundingBox.of(loc.toVector(), radius, radius, radius);
-                        repelEntitiesInAABBFromPoint(player.getWorld(), box, player.getLocation().toVector(), player);
-                        if (player.isDead() || !player.isOnline() || !player.isSneaking())
-                            cancel();
-                    }
-                }.runTaskTimer(ShiftDistance.this, 0, 1));
+                    }.runTaskTimer(ShiftDistance.this, 0, 1);
+                });
         } else
             Optional.ofNullable(blowingTasks.remove(player)).ifPresent(BukkitTask::cancel);
     }
